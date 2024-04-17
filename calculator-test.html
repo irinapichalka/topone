@@ -7,7 +7,10 @@
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
-   <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
     <style>
       body {
@@ -20,7 +23,7 @@
         bottom: 0;
         width: 100%;
       }
-      li:hover{
+      li:hover {
         cursor: pointer;
         color: red;
       }
@@ -28,94 +31,100 @@
   </head>
   <body>
     <input type="text" id="zip1" />
-    <ul id="forZip1">
-
-    </ul>
+    <ul id="forZip1"></ul>
     <input type="text" id="zip2" />
-    <ul id="forZip2">
-
-    </ul>
+    <ul id="forZip2"></ul>
     <button class="get-distance">Calculate distance</button>
     <script>
       //6755 to 501 = 222km
-      mapboxgl.accessToken = 'pk.eyJ1IjoiaXJpbmFyZXNjYW4iLCJhIjoiY2xvbzQweDY1MGxsbjJ2cXN4MDB3cmRmbSJ9.Qlyhi07UbOyvZsAAn440_Q';
+      mapboxgl.accessToken =
+        'pk.eyJ1IjoiaXJpbmFyZXNjYW4iLCJhIjoiY2xvbzQweDY1MGxsbjJ2cXN4MDB3cmRmbSJ9.Qlyhi07UbOyvZsAAn440_Q';
       let url =
-        "https://raw.githubusercontent.com/millbj92/US-Zip-Codes-JSON/master/USCities.json";
+        'https://raw.githubusercontent.com/millbj92/US-Zip-Codes-JSON/master/USCities.json';
 
-
-      let button = document.querySelector(".get-distance");
-      button.addEventListener("click", calculateDistance);
+      let button = document.querySelector('.get-distance');
+      button.addEventListener('click', calculateDistance);
       let data = [];
       (async () => {
         const resp = await fetch(url);
         data = await resp.json();
         //console.log(data);
 
-        let inputElem1 = document.querySelector("#zip1");
-        inputElem1.addEventListener('input', function(e){
+        let inputElem1 = document.querySelector('#zip1');
+        inputElem1.addEventListener('input', function (e) {
           let ul = document.getElementById('forZip1');
-          ul.innerHTML = "";
+          ul.innerHTML = '';
           let currentZip = e.target.value;
           //console.log(currentZip);
 
-          const updateZip = data.filter(point => point.zip_code.toString().startsWith(currentZip));
+          const updateZip = data.filter((point) =>
+            point.zip_code.toString().startsWith(currentZip)
+          );
           console.log(updateZip.length);
           for (let i = 0; i < 5; i++) {
             let li = document.createElement('li');
-            li.setAttribute('class','item');
-            li.innerText = updateZip[i].zip_code + ', ' +updateZip[i].state + ' '+updateZip[i].city;
+            li.setAttribute('class', 'item');
+            li.innerText =
+              updateZip[i].zip_code +
+              ', ' +
+              updateZip[i].state +
+              ' ' +
+              updateZip[i].city;
             //console.log(li);
             ul.appendChild(li);
-            li.addEventListener('click',function (){
+            li.addEventListener('click', function () {
               inputElem1.value = updateZip[i].zip_code;
-            })
+            });
           }
-         // console.log(updateZip);
+          // console.log(updateZip);
         });
 
-        let inputElem2 = document.querySelector("#zip2");
-        inputElem2.addEventListener('input', function(e){
+        let inputElem2 = document.querySelector('#zip2');
+        inputElem2.addEventListener('input', function (e) {
           let ul = document.getElementById('forZip2');
-          ul.innerHTML = "";
+          ul.innerHTML = '';
           let currentZip = e.target.value;
-         // console.log(currentZip);
+          // console.log(currentZip);
 
-          const updateZip = data.filter(point => point.zip_code.toString().startsWith(currentZip));
-         // console.log(updateZip.length);
+          const updateZip = data.filter((point) =>
+            point.zip_code.toString().startsWith(currentZip)
+          );
+          // console.log(updateZip.length);
           for (let i = 0; i < 5; i++) {
             let li = document.createElement('li');
-            li.setAttribute('class','item');
-            li.innerText = updateZip[i].zip_code + ', ' +updateZip[i].state + ' '+updateZip[i].city;
+            li.setAttribute('class', 'item');
+            li.innerText =
+              updateZip[i].zip_code +
+              ', ' +
+              updateZip[i].state +
+              ' ' +
+              updateZip[i].city;
             //console.log(li);
             ul.appendChild(li);
-            li.addEventListener('click',function (){
+            li.addEventListener('click', function () {
               inputElem2.value = updateZip[i].zip_code;
-            })
+            });
           }
           //console.log(updateZip);
         });
-
-      })()
+      })();
       //console.log(data);
-
-
-
 
       function calculateDistance() {
         let distance = 0;
-            let point1 = document.querySelector("#zip1").value;
-            console.log(point1);
-            let point2 = document.querySelector("#zip2").value;
-           // console.log(point2);
+        let point1 = document.querySelector('#zip1').value;
+        console.log(point1);
+        let point2 = document.querySelector('#zip2').value;
+        // console.log(point2);
 
-            const longlat1 = data.filter(
-              (point) => point.zip_code === Number(point1)
-            );
-            console.log(longlat1);
-            const longlat2 = data.filter(
-              (point) => point.zip_code === Number(point2)
-            );
-            //console.log(longlat2);
+        const longlat1 = data.filter(
+          (point) => point.zip_code === Number(point1)
+        );
+        console.log(longlat1);
+        const longlat2 = data.filter(
+          (point) => point.zip_code === Number(point2)
+        );
+        //console.log(longlat2);
 
         (async () => {
           let urlDistance = `https://api.mapbox.com/directions/v5/mapbox/driving/${longlat1[0].longitude},${longlat1[0].latitude};${longlat2[0].longitude},${longlat2[0].latitude}?access_token=pk.eyJ1IjoiaXJpbmFyZXNjYW4iLCJhIjoiY2xvbzQweDY1MGxsbjJ2cXN4MDB3cmRmbSJ9.Qlyhi07UbOyvZsAAn440_Q`;
@@ -123,14 +132,17 @@
           const resp = await fetch(urlDistance);
           let data = await resp.json();
           console.log(data);
-          let urlDistance2 = `https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${longlat1[0].longitude},${longlat1[0].latitude};${longlat2[0].longitude},${longlat2[0].latitude}?access_token=pk.eyJ1IjoiaXJpbmFyZXNjYW4iLCJhIjoiY2xvbzQweDY1MGxsbjJ2cXN4MDB3cmRmbSJ9.Qlyhi07UbOyvZsAAn440_Q`
+          console.log(
+            'Distance in km:' + data.routes[0].distance / 1000 + ' km'
+          );
+          /* let urlDistance2 = `https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${longlat1[0].longitude},${longlat1[0].latitude};${longlat2[0].longitude},${longlat2[0].latitude}?access_token=pk.eyJ1IjoiaXJpbmFyZXNjYW4iLCJhIjoiY2xvbzQweDY1MGxsbjJ2cXN4MDB3cmRmbSJ9.Qlyhi07UbOyvZsAAn440_Q`
                    const resp2 = await fetch(urlDistance2)
 
           let data2 = await resp2.json();
 
           console.log(data2);
-          alert(data.routes[0].distance/1000 + ' km');
-        })()
+          alert(data.routes[0].distance/1000 + ' km');*/
+        })();
       }
     </script>
   </body>
