@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Route Calculation Example</title>
+    <link
+      href="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      #map {
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1083.0.min.js"></script>
+    <script>
+      // AWS credentials setup
+      AWS.config.update({
+        accessKeyId: 'AKIA47CR2YM2JNTKBZ7C',
+        secretAccessKey: 'CxRlinXA59gp0yTaajXU7/26+ekCHfLgctWElMLq',
+        region: 'eu-north-1', // Replace with your AWS region (e.g., 'us-east-1')
+      });
+
+      // Initialize Amazon Location Service
+      const locationService = new AWS.Location();
+
+      // Define route parameters
+      const params = {
+        CalculatorName: 'topone-calculator',
+        DeparturePosition: [-123.115898, 49.295868], // Starting position (longitude, latitude)
+        DestinationPosition: [-123.3075, 49.284722], // Ending position (longitude, latitude)
+      };
+
+      // Calculate route
+      locationService.calculateRoute(params, (err, data) => {
+        if (err) {
+          console.error('Error calculating route:', err);
+        } else {
+          console.log('Route:', data);
+          // Draw route on the map using Maplibre GL
+          const map = new maplibregl.Map({
+            container: 'map',
+            style:
+              'https://maps.geo.eu-north-1.amazonaws.com/maps/v0/maps/test-map/style-descriptor?key=v1.public.eyJqdGkiOiJjYTJmZGZkNi03MDQ1LTQ5MmEtOGZlMC1iOTU2YTQ0OTMyMDMifT4yagJcfuGoHRwohzwvVn8cQXBDoMUjHnHd9_2lqlCh0YiNNweZ-UK4FPSGH_HYQcPHD-zDNhDcjHyEAT_3uhQWPCo60Z94W3QwjZ5Y1NdK1WLAQFXNnLN7RPAKsiXjJAWMBxzj2UhD17xsgD-eXwEIG-5xKpiVlnlOmo-7oSem-bd5Kkn3jcHzTO7WHLykkQL3oiVT8-7dnh9bP739v7vRQpG9GK97QoQ1YN-HLVZzBjfClZv8Eyj7X8brJlr01HqR-sZYd7qQd2lcxXe7EnkMzoaXZlrt1kdhcXdycFhjjOiZVJX9MTIBge_5sQ4hBgZVQAl23q0bDvxyFupqxCY.N2IyNTQ2ODQtOWE1YS00MmI2LTkyOTItMGJlNGMxODU1Mzc2',
+            center: [-123.115898, 49.295868],
+            zoom: 11,
+          });
+
+          // Add route layer to the map
+          map.on('load', () => {
+            map.addLayer({
+              id: 'route',
+              type: 'line',
+              source: {
+                type: 'geojson',
+                data: {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: data.Routes[0].Geometry,
+                  },
+                },
+              },
+              layout: {
+                'line-join': 'round',
+                'line-cap': 'round',
+              },
+              paint: {
+                'line-color': '#888',
+                'line-width': 8,
+              },
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
